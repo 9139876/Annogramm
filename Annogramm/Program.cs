@@ -5,23 +5,22 @@ using System.Linq;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Annogramm.DataStructs;
+using Annogramm.Properties;
 
 namespace Annogramm
 {
     class Program
     {
-        static string _path = @"d:\russian.txt";
-
         static void Main(string[] args)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            Console.WriteLine($"Загрузка словаря {_path}.");
+            Console.WriteLine("Загрузка словаря");
 
             //var root = new CharTreeNodeDict(' ', null);
 
-            LoadDictionary(_path);
+            LoadDictionary();
 
             sw.Stop();
             Console.WriteLine($"Загрузка словаря завершена. {(float)sw.ElapsedMilliseconds / 1000} second");
@@ -107,22 +106,21 @@ namespace Annogramm
             }
         }
 
-        static void LoadDictionary(string path)
+        static void LoadDictionary()
         {
-            using (var sr = new StreamReader(path))
+            var words = Resources.dict.Replace("\r",string.Empty).Split('\n');
+
+            foreach(var word in words)
             {
-                while (!sr.EndOfStream)
+                string s = word.ToUpper();
+
+                if (s.Length > 0)
                 {
-                    string s = sr.ReadLine().ToUpper();
+                    foreach (var ch in s)
+                        curDictNodeDictionary = curDictNodeDictionary.AddAndGet(ch);
 
-                    if (s.Length > 0)
-                    {
-                        foreach (var ch in s)
-                            curDictNodeDictionary = curDictNodeDictionary.AddAndGet(ch);
-
-                        curDictNodeDictionary.IsEndOfWord = true;
-                        curDictNodeDictionary = curDictNodeDictionary.GetRoot();
-                    }
+                    curDictNodeDictionary.IsEndOfWord = true;
+                    curDictNodeDictionary = curDictNodeDictionary.GetRoot();
                 }
             }
         }
